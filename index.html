@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>scopy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0c0c0e;
+            --bg-secondary: #161618;
+            --bg-tertiary: #1f1f23;
+            --bg-quaternary: #2a2a2f;
+            --border-subtle: #2a2a2f;
+            --border-medium: #373739;
+            --text-primary: #ffffff;
+            --text-secondary: #a6a6ab;
+            --text-tertiary: #6e6e73;
+            --accent-purple: #8b5cf6;
+            --accent-blue: #06b6d4;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-red: #ef4444;
+            --gradient-primary: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-blue) 100%);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-subtle);
+            height: 56px;
+            flex-shrink: 0;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .app-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+            font-size: 12px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Main Content */
+        .main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 320px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-content {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* Hotkey Highlight */
+        .hotkey-highlight {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-medium);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .hotkey-main {
+            margin-bottom: 12px;
+        }
+
+        .hotkey-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .hotkey-combo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .hotkey-combo kbd {
+            padding: 8px 12px;
+            background: var(--bg-quaternary);
+            border: 1px solid var(--border-medium);
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .hotkey-description {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            line-height: 1.4;
+        }
+
+        /* Instructions */
+        .instructions {
+            margin-top: 24px;
+        }
+
+        .instruction-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 16px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .step-content p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .step-content kbd {
+            padding: 2px 6px;
+            background: var(--bg-quaternary);
+            border: 1px solid var(--border-medium);
+            border-radius: 4px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* Content Panel */
+        .content-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-subtle);
+            background: var(--bg-secondary);
+            flex-shrink: 0;
+        }
+
+        .panel-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .panel-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Split View */
+        .split-view {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-secondary);
+            overflow: hidden;
+        }
+
+        .pane+.pane {
+            border-left: 1px solid var(--border-subtle);
+        }
+
+        .pane-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-subtle);
+            background: var(--bg-tertiary);
+            flex-shrink: 0;
+        }
+
+        .pane-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pane-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .copy-btn {
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border-medium);
+            background: var(--bg-quaternary);
+            color: var(--text-secondary);
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent-purple);
+            color: white;
+            border-color: var(--accent-purple);
+        }
+
+        .pane-stats {
+            font-size: 11px;
+            color: var(--text-tertiary);
+        }
+
+        .pane-body {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+
+        .pane-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .pane-body::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        .pane-body::-webkit-scrollbar-thumb {
+            background: var(--border-medium);
+            border-radius: 3px;
+        }
+
+        .pane-body::-webkit-scrollbar-thumb:hover {
+            background: var(--border-subtle);
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-tertiary);
+            text-align: center;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .empty-subtitle {
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+
+        /* Footer */
+        .footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 20px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-subtle);
+            height: 40px;
+            flex-shrink: 0;
+        }
+
+        .version {
+            font-size: 11px;
+            color: var(--text-tertiary);
+        }
+
+        .ready-indicator {
+            font-size: 11px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 280px;
+            }
+
+            .options-content {
+                flex-direction: column;
+            }
+
+            .options-divider {
+                padding: 16px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="app-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="2" />
+                        <path d="M8 12L16 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <h1 class="app-title">scopy</h1>
+            </div>
+            <div class="header-right">
+                <div class="status-indicator" id="statusIndicator">
+                    <div class="status-dot"></div>
+                    <span class="status-text">Ready</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Sidebar -->
+       
+                <div class="sidebar-content">
+                    <!-- Hotkey Highlight -->
+                    <div class="hotkey-highlight">
+                        <div class="hotkey-main">
+                            <span class="hotkey-label">Press to Format Clipboard:</span>
+                            <div class="hotkey-combo">
+                                <kbd>⌘</kbd>
+                                <span style="color: var(--text-tertiary);">+</span>
+                                <kbd>⇧</kbd>
+                                <span style="color: var(--text-tertiary);">+</span>
+                                <kbd>V</kbd>
+                            </div>
+                        </div>
+                        <p class="hotkey-description">Press this hotkey to copy and format anything</p>
+                    </div>   
+     
+
+            <!-- Content Panel -->
+            <div class="content-panel">
+                <div class="panel-header">
+                    <div class="panel-title">Content Preview</div>
+                </div>
+
+                <div class="panel-content">
+                    <div class="split-view">
+                        <!-- Original Content Pane -->
+                        <div class="pane">
+                            <div class="pane-header">
+                                <div class="pane-title">
+                                    📋 Original Content
+                                </div>
+                                <div class="pane-actions">
+                                    <button class="copy-btn" id="copyOriginalBtn">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" stroke="currentColor"
+                                                stroke-width="2" />
+                                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
+                                                stroke="currentColor" stroke-width="2" />
+                                        </svg>
+                                        Copy
+                                    </button>
+                                    <div class="pane-stats" id="originalStats">0 chars</div>
+                                </div>
+                            </div>
+                            <div class="pane-body" id="originalContent">
+                                <div class="empty-state">
+                                    <div class="empty-icon">📋</div>
+                                    <div class="empty-title">No content captured</div>
+                                    <div class="empty-subtitle">Use ⌘⇧V to format clipboard content</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Formatted Content Pane -->
+                        <div class="pane">
+                            <div class="pane-header">
+                                <div class="pane-title">
+                                    ✨ Smart Formatted
+                                </div>
+                                <div class="pane-actions">
+                                    <button class="copy-btn" id="copyFormattedBtn">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" stroke="currentColor"
+                                                stroke-width="2" />
+                                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
+                                                stroke="currentColor" stroke-width="2" />
+                                        </svg>
+                                        Copy
+                                    </button>
+                                    <div class="pane-stats" id="formattedStats">0 chars</div>
+                                </div>
+                            </div>
+                            <div class="pane-body" id="formattedContent">
+                                <div class="empty-state">
+                                    <div class="empty-icon">✨</div>
+                                    <div class="empty-title">No formatted content</div>
+                                    <div class="empty-subtitle">Formatted content will appear here</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-left">
+                <span class="version">v2.0.0</span>
+            </div>
+            <div class="footer-right">
+                <span class="ready-indicator">⌨️ Hotkey ready - ⌘⇧V to format</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+node_modules/
+dist/
+release/
+.env
+.env.local
+.env.*.local
+AI-SETUP.md
+CLAUDE.md
+.DS_Store
+*.key
+*.crt
+*.p12
+scopy.rb
