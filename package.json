@@ -51,6 +51,25 @@
       "hardenedRuntime": false,
       "gatekeeperAssess": false,
       "identity": null
+    },
+    "dmg": {
+      "title": "Install Scopy",
+      "icon": "assets/tray-icon.png",
+      "contents": [
+        {
+          "x": 130,
+          "y": 220,
+          "type": "file",
+          "path": "installer.sh",
+          "name": "🚀 Install Scopy (Double-click me!)"
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "file",
+          "name": "scopy.app"
+        }
+      ]
     }
   }
 }
